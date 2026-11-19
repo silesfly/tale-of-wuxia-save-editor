@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<title>협객풍운전 세이브 에디터 v1.0</title>
+<script>try { var t = localStorage.getItem("twx-theme"); if (t === "light" || t === "dark") { var m = document.querySelector('meta[name="color-scheme"]'); if (m) m.setAttribute("content", t); document.documentElement.dataset.theme = t; } } catch (e) {}</script>
+<style>
+:root { color-scheme: light dark; --bg:#f4ecdc; --fg:#2a2118; --muted:#6b5b45; --card:#fbf5e8; --surface-2:#efe4cd; --line:#d9c9ac; --accent:#b23a2a; --accent-fg:#fff7ee; --ok:#2f6b4f; --warn:#a8791f; --error:#a32b2b; --radius:10px; }
+:root:has(> head > meta[name="color-scheme"][content="dark"]), :root[data-theme="dark"] { color-scheme: dark; --bg:#0d1216; --fg:#e9e3d4; --muted:#94a19c; --card:#151c22; --surface-2:#1d262f; --line:#26323c; --accent:#c9a227; --accent-fg:#10151a; --ok:#4fae86; --warn:#d9a441; --error:#e0685f; }
+:root:has(> head > meta[name="color-scheme"][content="light"]), :root[data-theme="light"] { color-scheme: light; --bg:#f4ecdc; --fg:#2a2118; --muted:#6b5b45; --card:#fbf5e8; --surface-2:#efe4cd; --line:#d9c9ac; --accent:#b23a2a; --accent-fg:#fff7ee; --ok:#2f6b4f; --warn:#a8791f; --error:#a32b2b; }
+* { box-sizing: border-box; }
+body { margin:0; padding:16px 20px; max-width:1360px; margin-inline:auto; background:var(--bg); color:var(--fg); font:14px/1.5 system-ui, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; }
+header { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-block-end:12px; padding-block-end:10px; border-block-end:1px solid var(--line); }
+h1 { margin:0; font-size:20px; letter-spacing:.02em; }
+.subtitle { font-size:12px; color:var(--muted); }
+.badge { padding:3px 10px; border:1px solid var(--line); border-radius:999px; background:var(--card); color:var(--muted); font-size:12px; font-weight:600; }
+[role="group"] { display:flex; gap:6px; margin-inline-start:auto; }
+button, input, select { font:inherit; color:inherit; }
+.btn, .preset-button, [data-theme-choice] { display:inline-flex; align-items:center; gap:6px; padding:7px 12px; border:1px solid var(--line); border-radius:var(--radius); background:var(--card); cursor:pointer; }
+.btn:hover, .preset-button:hover, [data-theme-choice]:hover { border-color:var(--accent); }
+.btn-primary { background:var(--accent); color:var(--accent-fg); border-color:var(--accent); font-weight:600; }
+[data-theme-choice][aria-pressed="true"] { border-color:var(--accent); background:var(--accent); color:var(--accent-fg); font-weight:600; }
+.toolbar, #bridge-bar { display:flex; flex-wrap:wrap; gap:8px; margin-block-end:10px; align-items:center; }
+#bridge-bar[hidden] { display:none; }
+#bridge-bar select { min-inline-size:260px; padding:7px 10px; border:1px solid var(--line); border-radius:var(--radius); background:var(--card); }
+#notice-bar { margin-block-end:10px; padding:9px 12px; border:1px solid var(--line); border-inline-start:4px solid var(--accent); border-radius:var(--radius); background:var(--card); font-size:13px; }
+#notice-bar[data-level="ok"] { border-inline-start-color:var(--ok); }
+#notice-bar[data-level="error"] { border-inline-start-color:var(--error); }
+#notice-bar[data-level="warn"] { border-inline-start-color:var(--warn); }
+#summary-strip { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:8px; margin-block-end:12px; }
+#summary-strip:empty { display:none; }
+.summary-item { padding:8px 12px; border:1px solid var(--line); border-radius:var(--radius); background:var(--card); }
+.summary-item .k { display:block; font-size:11px; color:var(--muted); }
+.summary-item .v { font-weight:700; font-size:14px; }
+#presets-section { margin-block-end:12px; }
+#presets-bar { display:flex; flex-wrap:wrap; gap:8px; }
+.preset-button { font-size:13px; font-weight:500; }
+[role="tablist"] { display:flex; overflow-x:auto; scrollbar-width:none; gap:4px; border-block-end:1px solid var(--line); margin-block-end:14px; }
+[role="tablist"]::-webkit-scrollbar { display:none; }
+[role="tab"] { flex:none; position:relative; padding:10px 14px; border:0; background:none; color:var(--muted); white-space:nowrap; cursor:pointer; font-size:14px; }
+[role="tab"][aria-selected="true"] { color:var(--fg); font-weight:700; }
+[role="tab"][aria-selected="true"]::after { content:""; position:absolute; inset-inline:8px; inset-block-end:0; border-block-end:3px solid var(--accent); }
+[role="tabpanel"] { display:block; }
+[role="tabpanel"][hidden] { display:none; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:12px; margin-block-end:12px; }
+.row-inline { display:flex; flex-wrap:wrap; gap:8px; align-items:flex-end; margin-block-end:10px; }
+.row-inline > * { flex:1 1 150px; }
+.card { padding:14px; border:1px solid var(--line); border-radius:var(--radius); background:var(--card); margin-block-end:12px; }
+.card h3 { margin:0 0 10px; font-size:15px; color:var(--accent); }
+.field { display:block; margin-block-end:8px; }
+.field span { display:block; margin-block-end:3px; font-size:12px; color:var(--muted); }
+.card input[type="text"], .card input[type="number"], .card input[type="search"], .card select { width:100%; padding:6px 8px; border:1px solid var(--line); border-radius:8px; background:var(--bg); }
+.check-line { display:inline-flex; align-items:center; gap:6px; margin-inline-end:12px; font-size:13px; cursor:pointer; }
+.table-wrap { overflow:auto; max-block-size:420px; border:1px solid var(--line); border-radius:var(--radius); background:var(--card); margin-block-end:12px; }
+.table-wrap table { width:100%; border-collapse:collapse; font-size:13px; }
+.table-wrap th, .table-wrap td { padding:7px 10px; border-block-end:1px solid var(--line); text-align:start; vertical-align:middle; }
+.table-wrap thead th { position:sticky; inset-block-start:0; z-index:1; background:var(--surface-2); font-weight:600; }
+dialog { inline-size:min(580px, 92vw); max-block-size:85vh; padding:18px; border:1px solid var(--line); border-radius:var(--radius); background:var(--card); color:var(--fg); }
+dialog[open] { display:grid; gap:14px; }
+dialog:modal { overscroll-behavior:contain; }
+dialog::backdrop { overflow:hidden; overscroll-behavior:contain; background:rgba(8,10,14,.62); }
+#modal-title { margin:0; font-size:16px; }
+.modal-actions { display:flex; justify-content:flex-end; gap:8px; }
+footer { margin-block-start:16px; padding-block-start:10px; border-block-start:1px solid var(--line); font-size:12px; color:var(--muted); }
+@media (max-width:640px) { [role="group"] { margin-inline-start:0; } .grid { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header>
+<div>
+<h1>협객풍운전 세이브 에디터</h1>
+<div class="subtitle">한국어 패치 1.32 · 무손실 세이브 · 전역 업적(Round.dat) · 회차(GUID) 통합 편집기</div>
+</div>
+<span id="status-badge" class="badge">오프라인 파일 모드</span>
+<div role="group" aria-label="화면 테마 선택">
+<button type="button" data-theme-choice="auto" aria-pressed="true">자동</button>
+<button type="button" data-theme-choice="light" aria-pressed="false">밝게</button>
+<button type="button" data-theme-choice="dark" aria-pressed="false">어둡게</button>
+</div>
+</header>
+<main>
+<div class="toolbar">
+<label class="btn" for="file-input">파일 열기</label><input type="file" id="file-input" accept=".Save,.SaveTitle,.dat,*" hidden>
+<button type="button" id="btn-demo-save" class="btn">예시 캐릭터 불러오기</button>
+<button type="button" id="btn-demo-round" class="btn">예시 전역 업적(Round.dat)</button>
+<button type="button" id="btn-download" class="btn btn-primary">세이브 파일 내려받기</button>
+</div>
+<div id="bridge-bar" hidden>
+<select id="slot-select" aria-label="저장 슬롯 선택"></select>
+<button type="button" id="btn-load-slot" class="btn">선택 슬롯 열기</button>
+<button type="button" id="btn-save" class="btn btn-primary">백업 후 안전 저장</button>
+<button type="button" id="btn-refresh-slots" class="btn">목록 새로고침</button>
+</div>
+<div id="notice-bar" data-level="info" role="status" aria-live="polite">세이브 파일을 열거나 예시 데이터를 불러오세요.</div>
+<section id="summary-strip" aria-label="현재 세이브 요약"></section>
+<section id="presets-section" aria-label="원클릭 빠른 설정"><div id="presets-bar"></div></section>
+<div role="tablist" aria-label="편집 범주">
+<button type="button" role="tab" id="tab-btn-0" aria-selected="true" tabindex="0" aria-controls="tab-panel-0">기본 · 일정</button>
+<button type="button" role="tab" id="tab-btn-1" aria-selected="false" tabindex="-1" aria-controls="tab-panel-1">능력치 · 천부</button>
+<button type="button" role="tab" id="tab-btn-2" aria-selected="false" tabindex="-1" aria-controls="tab-panel-2">투로 · 내공</button>
+<button type="button" role="tab" id="tab-btn-3" aria-selected="false" tabindex="-1" aria-controls="tab-panel-3">행낭 · 장비</button>
+<button type="button" role="tab" id="tab-btn-4" aria-selected="false" tabindex="-1" aria-controls="tab-panel-4">인물 · 동료</button>
+<button type="button" role="tab" id="tab-btn-5" aria-selected="false" tabindex="-1" aria-controls="tab-panel-5">업적 · 회차 · 백업</button>
+</div>
+<section role="tabpanel" id="tab-panel-0" aria-labelledby="tab-btn-0"></section>
+<section role="tabpanel" id="tab-panel-1" aria-labelledby="tab-btn-1" hidden></section>
+<section role="tabpanel" id="tab-panel-2" aria-labelledby="tab-btn-2" hidden></section>
+<section role="tabpanel" id="tab-panel-3" aria-labelledby="tab-btn-3" hidden></section>
+<section role="tabpanel" id="tab-panel-4" aria-labelledby="tab-btn-4" hidden></section>
+<section role="tabpanel" id="tab-panel-5" aria-labelledby="tab-btn-5" hidden></section>
+<dialog id="modal-dialog" aria-labelledby="modal-title">
+<h2 id="modal-title">변경 사항 확인</h2>
+<div id="modal-body"></div>
+<div class="modal-actions">
+<button type="button" id="modal-cancel" class="btn">취소</button>
+<button type="button" id="modal-confirm" class="btn btn-primary">변경 사항 확정 저장</button>
+</div>
+</dialog>
+</main>
+<footer>모든 세이브 편집은 로컬에서만 안전하게 처리되며 외부 네트워크로 전송되지 않습니다.</footer>
+<script src="twx-codec.js"></script>
+<script src="catalog-data.js"></script>
+<script src="editor-core.js"></script>
+<script src="editor-ui.js"></script>
+</body>
+</html>

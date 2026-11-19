@@ -1,0 +1,16 @@
+HANDOFF*.md
+__pycache__/
+*.py[cod]
+.pytest_cache/
+node_modules/
+.twx_store.lock
+*.bak
+*.tmp
+*.Save
+*.SaveTitle
+*.dat
+dist/*.exe
+dist/*.dll
+dist/*.zip
+dist/*.txt
+dist/*.json
