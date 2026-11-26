@@ -1,4 +1,4 @@
-# 협객풍운전 세이브 에디터 v1.0
+# 협객풍운전 세이브 에디터 v1.0.1
 
 스팀판 **협객풍운전** (앱 번호 `377530`, 빌드 `13538331`, 한국어 패치 `1.32` 기준) 전용 무손실 세이브 · 전역 업적(`Round.dat`) · 회차 고유 기록 편집기입니다.
 
@@ -27,8 +27,8 @@
    - **업적 · 회차 · 백업**: 공식 업적 `164`종 해금, 성당 다회차 특전(`최대 7점`), 회차 천부·보물상자 전체 개방, 백업 목록 조회 및 즉시 복원
 
 4. **3가지 실행 방식 제공**
-   - **단독 윈도우 실행 파일 (`TaleOfWuxiaSaveEditor-v1.0.exe`)**: 설치 없이 바로 실행되는 64비트 윈도우 데스크톱 앱(`WebView2` 기반)
-   - **오프라인 단일 웹 파일 (`TaleOfWuxiaSaveEditor-v1.0.html`)**: 브라우저에서 인터넷 없이 바로 열어 파일 열기·내려받기로 편집
+   - **단독 윈도우 실행 파일 (`TaleOfWuxiaSaveEditor-v1.0.1.exe`)**: 설치 없이 바로 실행되는 64비트 윈도우 데스크톱 앱(`WebView2` 기반)
+   - **오프라인 단일 웹 파일 (`TaleOfWuxiaSaveEditor-v1.0.1.html`)**: 브라우저에서 인터넷 없이 바로 열어 파일 열기·내려받기로 편집
    - **표준 파이썬 명령줄 도구 및 로컬 브리지 서버 (`twx_editor.py`)**: 외부 패키지 설치 없이 파이썬 `3.10` 이상 표준 라이브러리만으로 슬롯 탐색·검증·적용·복원 및 로컬 웹 편집 서버 구동
 
 ---
@@ -44,13 +44,13 @@
 
 ## 실행 방법
 
-### 1) 윈도우 데스크톱 앱 (`TaleOfWuxiaSaveEditor-v1.0.exe`)
-1. 릴리스에서 `TaleOfWuxiaSaveEditor-v1.0-Windows.zip`을 내려받아 압축을 해제합니다.
-2. `TaleOfWuxiaSaveEditor-v1.0.exe`를 실행하면 설치된 세이브 경로를 자동으로 찾아 연결합니다(사용자 지정 경로는 `TWX_SAVE_ROOT` 환경변수로 지정 가능).
+### 1) 윈도우 데스크톱 앱 (`TaleOfWuxiaSaveEditor-v1.0.1.exe`)
+1. 릴리스에서 `TaleOfWuxiaSaveEditor-v1.0.1-Windows.zip`을 내려받아 압축을 해제합니다.
+2. `TaleOfWuxiaSaveEditor-v1.0.1.exe`를 실행하면 설치된 세이브 경로를 자동으로 찾아 연결합니다(사용자 지정 경로는 `TWX_SAVE_ROOT` 환경변수로 지정 가능).
 3. 상단 슬롯 목록에서 편집할 슬롯을 선택하고 수치를 조정한 뒤 **백업 후 안전 저장**을 누릅니다.
 
-### 2) 오프라인 단일 웹 파일 (`TaleOfWuxiaSaveEditor-v1.0.html`)
-1. `TaleOfWuxiaSaveEditor-v1.0.html`을 크롬·엣지 등 최신 브라우저로 엽니다.
+### 2) 오프라인 단일 웹 파일 (`TaleOfWuxiaSaveEditor-v1.0.1.html`)
+1. `TaleOfWuxiaSaveEditor-v1.0.1.html`을 크롬·엣지 등 최신 브라우저로 엽니다.
 2. **파일 열기**로 `.Save` 또는 `Round.dat` 파일을 불러와 편집한 뒤 **세이브 파일 내려받기**로 저장합니다.
 
 ### 3) 파이썬 명령줄 및 로컬 서버 (`twx_editor.py`)

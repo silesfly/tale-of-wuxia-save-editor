@@ -60,16 +60,31 @@ function runTests() {
   assert.throws(() => TWXCodec.validateData(negMoney), /금전/);
 
   const badYear = JSON.parse(JSON.stringify(demoSave));
-  badYear.m_iYear = 25;
+  badYear.m_iYear = -1;
   assert.throws(() => TWXCodec.validateData(badYear), /연도/);
 
   const badRoutineLv = JSON.parse(JSON.stringify(demoSave));
-  badRoutineLv.m_PlayerRoutineNodeList[0].m_iLV = 11;
+  badRoutineLv.m_PlayerRoutineNodeList[0].m_iLV = -1;
   assert.throws(() => TWXCodec.validateData(badRoutineLv), /m_iLV/);
 
   const badBackpackAmt = JSON.parse(JSON.stringify(demoSave));
-  badBackpackAmt.m_BackpackList[0].m_iAmount = 0;
+  badBackpackAmt.m_BackpackList[0].m_iAmount = -1;
   assert.throws(() => TWXCodec.validateData(badBackpackAmt), /m_iAmount/);
+
+  // Real-save DLL edge values must pass load/save validation
+  const dllEdgeSave = JSON.parse(JSON.stringify(demoSave));
+  dllEdgeSave.m_iYear = 25;
+  dllEdgeSave.m_iNowTime = 0;
+  dllEdgeSave.m_iPhysical = -5;
+  dllEdgeSave.m_iMood = -5;
+  dllEdgeSave.m_iBattleDifficulty = 8;
+  dllEdgeSave.m_PropertyGroupsNodeList[0].m_GroupsNodwList[0].m_iValue = -10;
+  dllEdgeSave.m_PlayerRoutineNodeList[0].m_iLV = 0;
+  dllEdgeSave.m_PlayerNeigongNodeList[0].m_iLV = 0;
+  dllEdgeSave.m_BackpackList[0].m_iAmount = 0;
+  dllEdgeSave.m_NpcFriendlyNodeList[0].m_iFriendly = -50;
+  dllEdgeSave.m_teamMemberList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  assert.deepStrictEqual(TWXCodec.validateData(dllEdgeSave), { ok: true, kind: "save" });
 
   // 5) All 8 presets across save / round / guid
   assert.strictEqual(EditorCore.PRESETS.length, 8);
@@ -212,9 +227,11 @@ function runTests() {
 
   teamSave.m_teamMemberList.push(200);
   assert.strictEqual(teamSave.m_teamMemberList.length, 10);
+  assert.deepStrictEqual(TWXCodec.validateData(teamSave), { ok: true, kind: "save" });
+  teamSave.m_teamMemberList.push(-1);
   assert.throws(() => {
     TWXCodec.validateData(teamSave);
-  }, /최대 9명/);
+  }, /동행 대원/);
 
   // 11) WeakMap metadata isolation: __twxMeta / __twxObjTokens / __twxArrTokens / __proto__ / constructor / hasOwnProperty
   (function () {

@@ -137,7 +137,7 @@ namespace TaleOfWuxiaSaveEditor
             Assembly asm = Assembly.GetExecutingAssembly();
             foreach (string name in asm.GetManifestResourceNames())
             {
-                if (name.EndsWith("TaleOfWuxiaSaveEditor-v1.0.html", StringComparison.OrdinalIgnoreCase))
+                if (name.EndsWith("TaleOfWuxiaSaveEditor-v1.0.1.html", StringComparison.OrdinalIgnoreCase))
                 {
                     using (Stream s = asm.GetManifestResourceStream(name))
                     {
@@ -152,8 +152,8 @@ namespace TaleOfWuxiaSaveEditor
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
             string[] candidates = new string[]
             {
-                Path.Combine(baseDir, "TaleOfWuxiaSaveEditor-v1.0.html"),
-                Path.Combine(baseDir, "dist", "TaleOfWuxiaSaveEditor-v1.0.html")
+                Path.Combine(baseDir, "TaleOfWuxiaSaveEditor-v1.0.1.html"),
+                Path.Combine(baseDir, "dist", "TaleOfWuxiaSaveEditor-v1.0.1.html")
             };
             for (int i = 0; i < candidates.Length; i++)
             {
@@ -806,7 +806,7 @@ namespace TaleOfWuxiaSaveEditor
 
         public MainForm()
         {
-            Text = "\uD611\uAC1D\uD48D\uC6B4\uC804 \uC138\uC774\uBE0C \uC5D0\uB514\uD130 v1.0";
+            Text = "\uD611\uAC1D\uD48D\uC6B4\uC804 \uC138\uC774\uBE0C \uC5D0\uB514\uD130 v1.0.1";
             Width = 1280;
             Height = 860;
             _webView = new WebView2 { Dock = DockStyle.Fill };

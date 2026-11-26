@@ -429,13 +429,13 @@
     }
     if (kind === "save") {
       reqInt(data.m_iMoney, 0, 999999999, "금전(m_iMoney)");
-      reqInt(data.m_iYear, 1, 20, "연도(m_iYear)");
-      reqInt(data.m_iMonth, 1, 12, "월(m_iMonth)");
-      reqInt(data.m_iMonthInterval, 0, 4, "순(m_iMonthInterval)");
-      reqInt(data.m_iNowTime, 1, 12, "시진(m_iNowTime)");
-      reqInt(data.m_iPhysical, 0, 999, "체력(m_iPhysical)");
-      reqInt(data.m_iMood, 0, 999, "기분(m_iMood)");
-      if (has(data, "m_iBattleDifficulty")) reqInt(data.m_iBattleDifficulty, 0, 3, "전투 난이도(m_iBattleDifficulty)");
+      reqInt(data.m_iYear, 0, 999, "연도(m_iYear)");
+      reqInt(data.m_iMonth, 0, 12, "월(m_iMonth)");
+      reqInt(data.m_iMonthInterval, 0, 10, "순(m_iMonthInterval)");
+      reqInt(data.m_iNowTime, 0, 12, "시진(m_iNowTime)");
+      reqInt(data.m_iPhysical, -999, 99999, "체력(m_iPhysical)");
+      reqInt(data.m_iMood, -999, 99999, "기분(m_iMood)");
+      if (has(data, "m_iBattleDifficulty")) reqInt(data.m_iBattleDifficulty, 0, 99, "전투 난이도(m_iBattleDifficulty)");
       reqStr(data.m_strPlayerName, "이름(m_strPlayerName)");
       reqStr(data.m_strPlayerLastName, "성(m_strPlayerLastName)");
       reqArr(data.m_PropertyGroupsNodeList, "속성 그룹(m_PropertyGroupsNodeList)");
@@ -446,52 +446,49 @@
         g.m_GroupsNodwList.forEach(function (n, ni) {
           var p = "속성[" + gi + ":" + ni + "]";
           if (!n || typeof n !== "object" || Array.isArray(n)) fail(p + " 객체 오류");
-          reqInt(n.m_iValue, 0, Number.MAX_SAFE_INTEGER, p + ".m_iValue");
+          reqInt(n.m_iValue, -999999999, Number.MAX_SAFE_INTEGER, p + ".m_iValue");
           reqInt(n.m_iIndex, 0, Number.MAX_SAFE_INTEGER, p + ".m_iIndex");
-          reqInt(n.m_iExp, 0, Number.MAX_SAFE_INTEGER, p + ".m_iExp");
-          reqInt(n.m_iMax, 0, Number.MAX_SAFE_INTEGER, p + ".m_iMax");
+          reqInt(n.m_iExp, -999999999, Number.MAX_SAFE_INTEGER, p + ".m_iExp");
+          reqInt(n.m_iMax, -999999999, Number.MAX_SAFE_INTEGER, p + ".m_iMax");
         });
       });
       reqArr(data.m_PlayerRoutineNodeList, "보유 투로(m_PlayerRoutineNodeList)");
       data.m_PlayerRoutineNodeList.forEach(function (n, idx) {
         var p = "투로[" + idx + "]";
         if (!n || typeof n !== "object" || Array.isArray(n)) fail(p + " 객체 오류");
-        reqInt(n.m_iRoutineID, 1, Number.MAX_SAFE_INTEGER, p + ".m_iRoutineID");
-        reqInt(n.m_iLV, 1, 10, p + ".m_iLV");
-        reqInt(n.m_iAccumulationExp, 0, Number.MAX_SAFE_INTEGER, p + ".m_iAccumulationExp");
+        reqInt(n.m_iRoutineID, 0, Number.MAX_SAFE_INTEGER, p + ".m_iRoutineID");
+        reqInt(n.m_iLV, 0, 99, p + ".m_iLV");
+        reqInt(n.m_iAccumulationExp, -999999999, Number.MAX_SAFE_INTEGER, p + ".m_iAccumulationExp");
       });
       reqArr(data.m_PlayerNeigongNodeList, "보유 심법(m_PlayerNeigongNodeList)");
       data.m_PlayerNeigongNodeList.forEach(function (n, idx) {
         var p = "심법[" + idx + "]";
         if (!n || typeof n !== "object" || Array.isArray(n)) fail(p + " 객체 오류");
-        reqInt(n.m_iNeigongID, 1, Number.MAX_SAFE_INTEGER, p + ".m_iNeigongID");
-        reqInt(n.m_iLV, 1, 10, p + ".m_iLV");
-        reqInt(n.m_iAccumulationExp, 0, Number.MAX_SAFE_INTEGER, p + ".m_iAccumulationExp");
+        reqInt(n.m_iNeigongID, 0, Number.MAX_SAFE_INTEGER, p + ".m_iNeigongID");
+        reqInt(n.m_iLV, 0, 99, p + ".m_iLV");
+        reqInt(n.m_iAccumulationExp, -999999999, Number.MAX_SAFE_INTEGER, p + ".m_iAccumulationExp");
       });
       reqArr(data.m_BackpackList, "행낭(m_BackpackList)");
       data.m_BackpackList.forEach(function (n, idx) {
         var p = "행낭[" + idx + "]";
         if (!n || typeof n !== "object" || Array.isArray(n)) fail(p + " 객체 오류");
-        reqInt(n.m_iAmount, 1, Number.MAX_SAFE_INTEGER, p + ".m_iAmount");
+        reqInt(n.m_iAmount, 0, Number.MAX_SAFE_INTEGER, p + ".m_iAmount");
         var d = n._ItemDataNode;
         if (!d || typeof d !== "object" || Array.isArray(d)) fail(p + "._ItemDataNode 객체 오류");
-        reqInt(d.m_iItemID, 1, Number.MAX_SAFE_INTEGER, p + ".m_iItemID");
+        reqInt(d.m_iItemID, 0, Number.MAX_SAFE_INTEGER, p + ".m_iItemID");
         reqArr(d.m_ItmeEffectNodeList, p + ".m_ItmeEffectNodeList");
       });
       reqArr(data.m_NpcFriendlyNodeList, "우호도(m_NpcFriendlyNodeList)");
       data.m_NpcFriendlyNodeList.forEach(function (n, idx) {
         var p = "우호도[" + idx + "]";
         if (!n || typeof n !== "object" || Array.isArray(n)) fail(p + " 객체 오류");
-        reqInt(n.m_iNpcID, 1, Number.MAX_SAFE_INTEGER, p + ".m_iNpcID");
-        reqInt(n.m_iFriendly, -1, 999, p + ".m_iFriendly");
+        reqInt(n.m_iNpcID, 0, Number.MAX_SAFE_INTEGER, p + ".m_iNpcID");
+        reqInt(n.m_iFriendly, -999, 999, p + ".m_iFriendly");
       });
       if (has(data, "m_teamMemberList")) {
         reqArr(data.m_teamMemberList, "동행 대원(m_teamMemberList)");
-        if (data.m_teamMemberList.length > 9) {
-          fail("동행 대원(m_teamMemberList)은 최대 9명까지 편성할 수 있습니다.");
-        }
-        data.m_teamMemberList.forEach(function (cid, idx) {
-          reqInt(cid, 1, Number.MAX_SAFE_INTEGER, "동행 대원 번호");
+        data.m_teamMemberList.forEach(function (cid) {
+          reqInt(cid, 0, Number.MAX_SAFE_INTEGER, "동행 대원 번호");
         });
       }
     } else if (kind === "round") {
@@ -504,17 +501,17 @@
       data.achiCountList.forEach(function (n, idx) {
         var p = "achiCountList[" + idx + "]";
         if (!n || typeof n !== "object" || Array.isArray(n)) fail(p + " 객체 오류");
-        reqInt(n.m_iID, 1, Number.MAX_SAFE_INTEGER, p + ".m_iID");
+        reqInt(n.m_iID, 0, Number.MAX_SAFE_INTEGER, p + ".m_iID");
         reqInt(n.m_iNow, 0, Number.MAX_SAFE_INTEGER, p + ".m_iNow");
       });
     } else if (kind === "guid") {
       reqStr(data.guid, "guid", true);
-      reqInt(data.iDifficulty, 0, 3, "iDifficulty");
+      reqInt(data.iDifficulty, 0, 99, "iDifficulty");
       reqArr(data.openTalentList, "openTalentList");
       reqArr(data.openChestList, "openChestList");
     } else if (kind === "title") {
       reqArr(data, "title");
-      if (data.length < 1 || data.length > 20) fail("세이브 타이틀 배열 길이가 올바르지 않습니다.");
+      if (data.length > 100) fail("세이브 타이틀 배열 길이가 올바르지 않습니다.");
       data.forEach(function (n, idx) {
         if (!n || typeof n !== "object" || Array.isArray(n) || typeof n.m_bHaveData !== "boolean") {
           fail("타이틀[" + idx + "].m_bHaveData 값이 올바르지 않습니다.");

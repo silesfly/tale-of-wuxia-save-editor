@@ -657,7 +657,7 @@ async function runModeB(browser, pyScript) {
 async function main() {
   const { chromium } = loadPlaywright();
   const repoRoot = path.resolve(__dirname, "..");
-  const distHtml = path.join(repoRoot, "dist", "TaleOfWuxiaSaveEditor-v1.0.html");
+  const distHtml = path.join(repoRoot, "dist", "TaleOfWuxiaSaveEditor-v1.0.1.html");
   const pyScript = path.join(repoRoot, "twx_editor.py");
 
   const launchOpts = { headless: true };

@@ -812,7 +812,7 @@ namespace TaleOfWuxiaSaveEditor
             if (parsed is object[] || parsed is IList)
             {
                 object[] titleArr = AsObjectArray(parsed, "title");
-                Check(titleArr.Length >= 1 && titleArr.Length <= 20, "INVALID_TITLE_LENGTH");
+                Check(titleArr.Length <= 100, "INVALID_TITLE_LENGTH");
                 for (int i = 0; i < titleArr.Length; i++)
                 {
                     var item = titleArr[i] as Dictionary<string, object>;
@@ -832,14 +832,14 @@ namespace TaleOfWuxiaSaveEditor
             if (isSave)
             {
                 ReqInt(root, "m_iMoney", 0, 999999999);
-                ReqInt(root, "m_iYear", 1, 20);
-                ReqInt(root, "m_iMonth", 1, 12);
-                ReqInt(root, "m_iMonthInterval", 0, 4);
-                ReqInt(root, "m_iNowTime", 1, 12);
-                ReqInt(root, "m_iPhysical", 0, 999);
-                ReqInt(root, "m_iMood", 0, 999);
+                ReqInt(root, "m_iYear", 0, 999);
+                ReqInt(root, "m_iMonth", 0, 12);
+                ReqInt(root, "m_iMonthInterval", 0, 10);
+                ReqInt(root, "m_iNowTime", 0, 12);
+                ReqInt(root, "m_iPhysical", -999, 99999);
+                ReqInt(root, "m_iMood", -999, 99999);
                 if (root.ContainsKey("m_iBattleDifficulty"))
-                    ReqInt(root, "m_iBattleDifficulty", 0, 3);
+                    ReqInt(root, "m_iBattleDifficulty", 0, 99);
                 ReqString(root, "m_strPlayerName", false);
                 ReqString(root, "m_strPlayerLastName", false);
 
@@ -854,10 +854,10 @@ namespace TaleOfWuxiaSaveEditor
                     {
                         var n = nodes[j] as Dictionary<string, object>;
                         Check(n != null, "INVALID_PROPERTY_NODE");
-                        ReqInt(n, "m_iValue", 0, long.MaxValue);
+                        ReqInt(n, "m_iValue", -999999999, long.MaxValue);
                         ReqInt(n, "m_iIndex", 0, long.MaxValue);
-                        ReqInt(n, "m_iExp", 0, long.MaxValue);
-                        ReqInt(n, "m_iMax", 0, long.MaxValue);
+                        ReqInt(n, "m_iExp", -999999999, long.MaxValue);
+                        ReqInt(n, "m_iMax", -999999999, long.MaxValue);
                     }
                 }
 
@@ -866,9 +866,9 @@ namespace TaleOfWuxiaSaveEditor
                 {
                     var r = routines[i] as Dictionary<string, object>;
                     Check(r != null, "INVALID_ROUTINE_NODE");
-                    ReqInt(r, "m_iRoutineID", 1, long.MaxValue);
-                    ReqInt(r, "m_iLV", 1, 10);
-                    ReqInt(r, "m_iAccumulationExp", 0, long.MaxValue);
+                    ReqInt(r, "m_iRoutineID", 0, long.MaxValue);
+                    ReqInt(r, "m_iLV", 0, 99);
+                    ReqInt(r, "m_iAccumulationExp", -999999999, long.MaxValue);
                 }
 
                 object[] neigongs = ReqArray(root, "m_PlayerNeigongNodeList");
@@ -876,9 +876,9 @@ namespace TaleOfWuxiaSaveEditor
                 {
                     var ng = neigongs[i] as Dictionary<string, object>;
                     Check(ng != null, "INVALID_NEIGONG_NODE");
-                    ReqInt(ng, "m_iNeigongID", 1, long.MaxValue);
-                    ReqInt(ng, "m_iLV", 1, 10);
-                    ReqInt(ng, "m_iAccumulationExp", 0, long.MaxValue);
+                    ReqInt(ng, "m_iNeigongID", 0, long.MaxValue);
+                    ReqInt(ng, "m_iLV", 0, 99);
+                    ReqInt(ng, "m_iAccumulationExp", -999999999, long.MaxValue);
                 }
 
                 object[] backpack = ReqArray(root, "m_BackpackList");
@@ -886,11 +886,11 @@ namespace TaleOfWuxiaSaveEditor
                 {
                     var bp = backpack[i] as Dictionary<string, object>;
                     Check(bp != null, "INVALID_BACKPACK_NODE");
-                    ReqInt(bp, "m_iAmount", 1, long.MaxValue);
+                    ReqInt(bp, "m_iAmount", 0, long.MaxValue);
                     object itemRaw = null;
                     Check(bp.TryGetValue("_ItemDataNode", out itemRaw) && itemRaw is Dictionary<string, object>, "MISSING_ITEM_DATA_NODE");
                     var itemNode = (Dictionary<string, object>)itemRaw;
-                    ReqInt(itemNode, "m_iItemID", 1, long.MaxValue);
+                    ReqInt(itemNode, "m_iItemID", 0, long.MaxValue);
                     ReqArray(itemNode, "m_ItmeEffectNodeList");
                 }
 
@@ -899,18 +899,17 @@ namespace TaleOfWuxiaSaveEditor
                 {
                     var fn = friendly[i] as Dictionary<string, object>;
                     Check(fn != null, "INVALID_FRIENDLY_NODE");
-                    ReqInt(fn, "m_iNpcID", 1, long.MaxValue);
-                    ReqInt(fn, "m_iFriendly", -1, 999);
+                    ReqInt(fn, "m_iNpcID", 0, long.MaxValue);
+                    ReqInt(fn, "m_iFriendly", -999, 999);
                 }
 
                 if (root.ContainsKey("m_teamMemberList"))
                 {
                     object[] team = ReqArray(root, "m_teamMemberList");
-                    Check(team.Length <= 9, "TEAM_LIMIT_EXCEEDED");
                     for (int i = 0; i < team.Length; i++)
                     {
                         long teamId;
-                        bool ok = TryGetExactLong(team[i], out teamId) && teamId >= 1L;
+                        bool ok = TryGetExactLong(team[i], out teamId) && teamId >= 0L;
                         Check(ok, "TEAM_MEMBER_INVALID_" + i.ToString(CultureInfo.InvariantCulture));
                     }
                 }
@@ -930,7 +929,7 @@ namespace TaleOfWuxiaSaveEditor
                 {
                     var cn = counts[i] as Dictionary<string, object>;
                     Check(cn != null, "INVALID_ACHI_COUNT");
-                    ReqInt(cn, "m_iID", 1, long.MaxValue);
+                    ReqInt(cn, "m_iID", 0, long.MaxValue);
                     ReqInt(cn, "m_iNow", 0, long.MaxValue);
                 }
                 return "round";
@@ -939,7 +938,7 @@ namespace TaleOfWuxiaSaveEditor
             if (isGuid)
             {
                 ReqString(root, "guid", true);
-                ReqInt(root, "iDifficulty", 0, 3);
+                ReqInt(root, "iDifficulty", 0, 99);
                 ReqArray(root, "openTalentList");
                 ReqArray(root, "openChestList");
                 return "guid";

@@ -92,8 +92,17 @@ class TestTwxEditorCliAndServer(unittest.TestCase):
             '{"vals":[1.0e-5,"\\u003Cx>",7]}',
         )
 
+        edge = create_demo_data("save")
+        edge["m_iNowTime"] = 0
+        edge["m_iBattleDifficulty"] = 8
+        edge["m_BackpackList"][0]["m_iAmount"] = 0
+        edge["m_PlayerRoutineNodeList"][0]["m_iLV"] = 0
+        edge["m_NpcFriendlyNodeList"][0]["m_iFriendly"] = -50
+        edge["m_teamMemberList"] = list(range(1, 11))
+        self.assertEqual(validate_data(edge), "save")
+
         bad = create_demo_data("save")
-        bad["m_teamMemberList"] = list(range(1, 11))
+        bad["m_teamMemberList"] = [-1]
         with self.assertRaises(ValueError):
             validate_data(bad)
 

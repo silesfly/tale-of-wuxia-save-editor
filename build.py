@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""협객풍운전 세이브 에디터 (Tale of Wuxia Save Editor v1.0) 단일 HTML 빌드 스크립트."""
+"""협객풍운전 세이브 에디터 (Tale of Wuxia Save Editor v1.0.1) 단일 HTML 빌드 스크립트."""
 from __future__ import annotations
 
 import argparse
@@ -10,7 +10,7 @@ import tempfile
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
-VERSION = "1.0"
+VERSION = "1.0.1"
 NAME = "TaleOfWuxiaSaveEditor"
 SRC_FILE = BASE_DIR / "src" / "editor-page.html"
 DIST_DIR = BASE_DIR / "dist"

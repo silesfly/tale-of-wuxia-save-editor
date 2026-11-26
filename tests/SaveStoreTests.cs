@@ -114,9 +114,11 @@ namespace TaleOfWuxiaSaveEditorTests
 
             AssertThrows(delegate { SaveStore.ValidateSaveJson("{bad"); }, "Malformed JSON");
             AssertThrows(delegate { SaveStore.ValidateSaveJson(MakeSaveJson(-1, 2, 6)); }, "Negative money");
-            AssertThrows(delegate { SaveStore.ValidateSaveJson(MakeSaveJson(100, 25, 6)); }, "Year > 20");
-            AssertThrows(delegate { SaveStore.ValidateSaveJson(MakeSaveJson(100, 2, 11)); }, "Routine LV > 10");
-            AssertThrows(delegate { SaveStore.ValidateSaveJson(MakeGuidJson(9)); }, "Guid difficulty > 3");
+            Assert(SaveStore.ValidateSaveJson(MakeSaveJson(100, 25, 0)) == "save", "Expected extended year & lv=0 save");
+            Assert(SaveStore.ValidateSaveJson(MakeGuidJson(8)) == "guid", "Expected extended guid difficulty=8");
+            AssertThrows(delegate { SaveStore.ValidateSaveJson(MakeSaveJson(100, -1, 6)); }, "Year < 0");
+            AssertThrows(delegate { SaveStore.ValidateSaveJson(MakeSaveJson(100, 2, -1)); }, "Routine LV < 0");
+            AssertThrows(delegate { SaveStore.ValidateSaveJson(MakeGuidJson(100)); }, "Guid difficulty > 99");
         }
 
         private static void TestResolveSafePath()
@@ -443,21 +445,13 @@ namespace TaleOfWuxiaSaveEditorTests
                    (goodKind == null ? "null" : goodKind));
 
             string ten = InsertTeamMemberList(baseJson, "[1,2,3,4,5,6,7,8,9,10]");
-            try
-            {
-                SaveStore.ValidateSaveJson(ten);
-                Assert(false, "10-entry team list should have thrown TEAM_LIMIT_EXCEEDED");
-            }
-            catch (Exception ex)
-            {
-                Assert(ex.Message != null &&
-                       ex.Message.IndexOf("TEAM_LIMIT_EXCEEDED", StringComparison.Ordinal) >= 0,
-                       "expected TEAM_LIMIT_EXCEEDED, got: " +
-                       (ex.Message == null ? "null" : ex.Message));
-            }
+            string tenKind = SaveStore.ValidateSaveJson(ten);
+            Assert(string.Equals(tenKind, "save", StringComparison.Ordinal),
+                   "10-entry team list should validate as save for mod/scene tolerance, got: " +
+                   (tenKind == null ? "null" : tenKind));
 
-            string zero = InsertTeamMemberList(baseJson, "[0]");
-            AssertThrows(delegate { SaveStore.ValidateSaveJson(zero); }, "Invalid team member 0");
+            string neg = InsertTeamMemberList(baseJson, "[-1]");
+            AssertThrows(delegate { SaveStore.ValidateSaveJson(neg); }, "Invalid negative team member -1");
 
             string bad = InsertTeamMemberList(baseJson, "[\"bad\"]");
             AssertThrows(delegate { SaveStore.ValidateSaveJson(bad); }, "Invalid team member string");

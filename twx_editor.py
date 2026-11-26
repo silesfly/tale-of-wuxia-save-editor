@@ -30,7 +30,7 @@ from urllib.parse import parse_qs, urlparse
 
 BASE_DIR = Path(__file__).resolve().parent
 CATALOG_PATH = BASE_DIR / "src" / "catalog-data.js"
-DIST_HTML_PATH = BASE_DIR / "dist" / "TaleOfWuxiaSaveEditor-v1.0.html"
+DIST_HTML_PATH = BASE_DIR / "dist" / "TaleOfWuxiaSaveEditor-v1.0.1.html"
 MAX_SAVE_BYTES = 16 * 1024 * 1024
 UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
 RESERVED_DEVICES = {
@@ -510,14 +510,14 @@ def validate_data(data: Any, expected_kind: str | None = None) -> str:
 
     if kind == "save":
         req_int(data.get("m_iMoney"), 0, 999_999_999, "m_iMoney")
-        req_int(data.get("m_iYear"), 1, 20, "m_iYear")
-        req_int(data.get("m_iMonth"), 1, 12, "m_iMonth")
-        req_int(data.get("m_iMonthInterval"), 0, 4, "m_iMonthInterval")
-        req_int(data.get("m_iNowTime"), 1, 12, "m_iNowTime")
-        req_int(data.get("m_iPhysical"), 0, 999, "m_iPhysical")
-        req_int(data.get("m_iMood"), 0, 999, "m_iMood")
+        req_int(data.get("m_iYear"), 0, 999, "m_iYear")
+        req_int(data.get("m_iMonth"), 0, 12, "m_iMonth")
+        req_int(data.get("m_iMonthInterval"), 0, 10, "m_iMonthInterval")
+        req_int(data.get("m_iNowTime"), 0, 12, "m_iNowTime")
+        req_int(data.get("m_iPhysical"), -999, 99_999, "m_iPhysical")
+        req_int(data.get("m_iMood"), -999, 99_999, "m_iMood")
         if "m_iBattleDifficulty" in data:
-            req_int(data.get("m_iBattleDifficulty"), 0, 3, "m_iBattleDifficulty")
+            req_int(data.get("m_iBattleDifficulty"), 0, 99, "m_iBattleDifficulty")
         if not isinstance(data.get("m_strPlayerName"), str) or not isinstance(data.get("m_strPlayerLastName"), str):
             raise ValueError("주인공 성/이름 문자열 필드가 누락되었습니다.")
         pg_list = data.get("m_PropertyGroupsNodeList")
@@ -530,8 +530,9 @@ def validate_data(data: Any, expected_kind: str | None = None) -> str:
             for n in g["m_GroupsNodwList"]:
                 if not isinstance(n, dict):
                     raise ValueError("속성 노드 객체 오류입니다.")
-                for fk in ("m_iValue", "m_iIndex", "m_iExp", "m_iMax"):
-                    req_int(n.get(fk), 0, 10**12, fk)
+                req_int(n.get("m_iIndex"), 0, 10**12, "m_iIndex")
+                for fk in ("m_iValue", "m_iExp", "m_iMax"):
+                    req_int(n.get(fk), -999_999_999, 10**12, fk)
         for rk, idk in (("m_PlayerRoutineNodeList", "m_iRoutineID"), ("m_PlayerNeigongNodeList", "m_iNeigongID")):
             arr = data.get(rk)
             if not isinstance(arr, list):
@@ -539,37 +540,35 @@ def validate_data(data: Any, expected_kind: str | None = None) -> str:
             for n in arr:
                 if not isinstance(n, dict):
                     raise ValueError(f"{rk} 원소 객체 오류입니다.")
-                req_int(n.get(idk), 1, 10**9, idk)
-                req_int(n.get("m_iLV"), 1, 10, "m_iLV")
-                req_int(n.get("m_iAccumulationExp"), 0, 10**12, "m_iAccumulationExp")
+                req_int(n.get(idk), 0, 10**9, idk)
+                req_int(n.get("m_iLV"), 0, 99, "m_iLV")
+                req_int(n.get("m_iAccumulationExp"), -999_999_999, 10**12, "m_iAccumulationExp")
         bp = data.get("m_BackpackList")
         if not isinstance(bp, list):
             raise ValueError("m_BackpackList 배열이 누락되었습니다.")
         for entry in bp:
             if not isinstance(entry, dict):
                 raise ValueError("행낭 항목 객체 오류입니다.")
-            req_int(entry.get("m_iAmount"), 1, 10**9, "m_iAmount")
+            req_int(entry.get("m_iAmount"), 0, 10**9, "m_iAmount")
             inode = entry.get("_ItemDataNode")
             if not isinstance(inode, dict) or not isinstance(inode.get("m_ItmeEffectNodeList"), list):
                 raise ValueError("_ItemDataNode 구조가 올바르지 않습니다.")
-            req_int(inode.get("m_iItemID"), 1, 10**9, "m_iItemID")
+            req_int(inode.get("m_iItemID"), 0, 10**9, "m_iItemID")
         nf = data.get("m_NpcFriendlyNodeList")
         if not isinstance(nf, list):
             raise ValueError("m_NpcFriendlyNodeList 배열이 누락되었습니다.")
         for n in nf:
             if not isinstance(n, dict):
                 raise ValueError("우호도 항목 객체 오류입니다.")
-            req_int(n.get("m_iNpcID"), 1, 10**9, "m_iNpcID")
-            req_int(n.get("m_iFriendly"), -1, 999, "m_iFriendly")
+            req_int(n.get("m_iNpcID"), 0, 10**9, "m_iNpcID")
+            req_int(n.get("m_iFriendly"), -999, 999, "m_iFriendly")
         if "m_teamMemberList" in data:
             tm = data["m_teamMemberList"]
             if not isinstance(tm, list):
                 raise ValueError("m_teamMemberList 배열이 올바르지 않습니다.")
-            if len(tm) > 9:
-                raise ValueError("m_teamMemberList 항목 수가 너무 많습니다.")
             for x in tm:
                 xiv = _as_exact_int(x)
-                if xiv is None or xiv < 1:
+                if xiv is None or xiv < 0:
                     raise ValueError("m_teamMemberList 항목이 올바르지 않습니다.")
     elif kind == "round":
         for fk in ("iMasterLevelCount", "iProLevelCount", "iNormalLevelCount", "iStartBegger"):
@@ -579,16 +578,16 @@ def validate_data(data: Any, expected_kind: str | None = None) -> str:
         for a in data["achiCountList"]:
             if not isinstance(a, dict):
                 raise ValueError("achiCountList 원소 객체 오류입니다.")
-            req_int(a.get("m_iID"), 1, 10**9, "m_iID")
+            req_int(a.get("m_iID"), 0, 10**9, "m_iID")
             req_int(a.get("m_iNow"), 0, 10**9, "m_iNow")
     elif kind == "guid":
         if not isinstance(data.get("guid"), str) or not data["guid"]:
             raise ValueError("guid 문자열이 비어 있습니다.")
-        req_int(data.get("iDifficulty"), 0, 3, "iDifficulty")
+        req_int(data.get("iDifficulty"), 0, 99, "iDifficulty")
         if not isinstance(data.get("openTalentList"), list) or not isinstance(data.get("openChestList"), list):
             raise ValueError("openTalentList / openChestList 배열이 누락되었습니다.")
     elif kind == "title":
-        if not isinstance(data, list) or not (1 <= len(data) <= 20):
+        if not isinstance(data, list) or len(data) > 100:
             raise ValueError("세이브 타이틀 배열 길이가 올바르지 않습니다.")
         for slot in data:
             if not isinstance(slot, dict) or not isinstance(slot.get("m_bHaveData"), bool):
